@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
+import * as XLSX from 'xlsx';
 
 const ADMIN_EMAIL = 'tejasdherange0099@gmail.com';
 
@@ -62,6 +63,44 @@ export default function AdminPage() {
             timeStyle: 'short',
         });
 
+    const exportToExcel = () => {
+        const dataToExport = filtered.map((b: any) => ({
+            'Jersey Number': b.jerseyNumber,
+            'Full Name': b.fullName || b.name,
+            'Email': b.email,
+            'Contact Number': b.contactNumber || 'N/A',
+            'Print Name': b.nameToPrint,
+            'Hoodie Size': b.hoodieSize,
+            'Payment Mode': b.paymentMode,
+            'Payment Screenshot': b.paymentScreenshot,
+            'Booked At': formatTime(b.bookedAt),
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Jersey Bookings');
+
+        // Auto-size columns
+        const cols = [
+            { wch: 12 }, // Jersey Number
+            { wch: 20 }, // Full Name
+            { wch: 30 }, // Email
+            { wch: 15 }, // Contact Number
+            { wch: 15 }, // Print Name
+            { wch: 12 }, // Hoodie Size
+            { wch: 15 }, // Payment Mode
+            { wch: 50 }, // Payment Screenshot
+            { wch: 20 }, // Booked At
+        ];
+        ws['!cols'] = cols;
+
+        // Generate filename with current date
+        const date = new Date().toISOString().split('T')[0];
+        const filename = `jersey-bookings-${date}.xlsx`;
+
+        XLSX.writeFile(wb, filename);
+    };
+
     if (isLoading || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -90,12 +129,21 @@ export default function AdminPage() {
                         {total} jersey{total !== 1 ? 's' : ''} booked
                     </p>
                 </div>
-                <button
-                    onClick={() => router.push('/dashboard')}
-                    className="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 border border-slate-700 hover:border-slate-500 hover:text-white transition-all"
-                >
-                    ← Back
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={exportToExcel}
+                        disabled={filtered.length === 0}
+                        className="px-4 py-2 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                    >
+                        <span>📊</span> Export to Excel
+                    </button>
+                    <button
+                        onClick={() => router.push('/dashboard')}
+                        className="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 border border-slate-700 hover:border-slate-500 hover:text-white transition-all"
+                    >
+                        ← Back
+                    </button>
+                </div>
             </div>
 
             {/* Stats row */}
