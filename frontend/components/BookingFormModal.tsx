@@ -36,6 +36,8 @@ export default function BookingFormModal({
     const [file, setFile] = useState<File | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [showSizeChart, setShowSizeChart] = useState(false);
+    const [showQR, setShowQR] = useState(false);
 
     // Auto-fill name if available
     useEffect(() => {
@@ -87,206 +89,231 @@ export default function BookingFormModal({
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-slate-950/90 backdrop-blur-xl animate-fade-in overflow-y-auto">
-            <div className="glass-card w-full max-w-2xl my-auto p-5 sm:p-8 animate-scale-up border-white/10 shadow-[0_0_50px_-12px_rgba(59,130,246,0.5)] relative overflow-hidden">
-                {/* Decorative background glow */}
-                <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-
-                <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4 relative z-10">
-                    <div className="text-center sm:text-left">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                            Jersey Allocation
-                        </h2>
-                        <p className="text-slate-400 text-sm mt-1">Reserve your customized hoodie</p>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+            <div className="w-full max-w-2xl bg-[var(--card-bg)] rounded-lg shadow-xl border border-[var(--card-border)] max-h-[90vh] overflow-y-auto animate-zoom-in">
+                <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 className="text-xl font-bold text-[var(--text-primary)]">
+                                Confirm Allocation
+                            </h2>
+                            <p className="text-[var(--text-secondary)] text-sm">Please fill in your details to reserve jersey <span className="font-bold text-[var(--accent-primary)]">#{jerseyNumber}</span></p>
+                        </div>
+                        <button onClick={onCancel} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-1 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                        <div className="flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
-                            <span className="text-xl font-black text-white italic">#{jerseyNumber.toString().padStart(2, '0')}</span>
-                        </div>
-                    </div>
-                </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        {/* Full Name */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Full Name</label>
-                            <input
-                                required
-                                type="text"
-                                placeholder="Your Name"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none placeholder:text-slate-600"
-                            />
-                        </div>
-
-                        {/* Contact */}
-                        <div className="space-y-2">
-                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">WhatsApp Number</label>
-                            <input
-                                required
-                                type="tel"
-                                placeholder="+91 ..."
-                                value={contactNumber}
-                                onChange={(e) => setContactNumber(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none placeholder:text-slate-600"
-                            />
-                        </div>
-
-                        {/* Hoodie Size */}
-                        <div className="sm:col-span-2 space-y-3">
-                            <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Select Hoodie Size</label>
-                            
-                            {/* Size Chart Image */}
-                            <div className="mb-4 p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                                <p className="text-slate-400 text-xs mb-2 text-center">
-                                    📐 Size Chart <span className="text-white font-semibold">(measurements in inches)</span>
-                                </p>
-                                <Image
-                                    src="/sizechart.png"
-                                    alt="Hoodie Size Chart"
-                                    width={800}
-                                    height={600}
-                                    className="w-full h-auto rounded-lg"
-                                    priority
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            {/* Full Name */}
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-[var(--text-secondary)]">Full Name</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    className="w-full px-3 py-2 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent outline-none transition-all"
                                 />
                             </div>
 
-                            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-                                {HOODIE_SIZES.map((size) => (
-                                    <button
-                                        key={size}
-                                        type="button"
-                                        onClick={() => setHoodieSize(size)}
-                                        className={`py-3 rounded-xl text-sm font-bold transition-all border ${hoodieSize === size
-                                            ? 'bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-600/20'
-                                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-600 hover:bg-slate-800'
-                                            }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Name to Print */}
-                        <div className="sm:col-span-2 space-y-2">
-                            <label className="flex justify-between items-end ml-1">
-                                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Name on Hoodie</span>
-                                <span className="text-[10px] text-blue-400 font-mono tracking-tighter">UPPERCASE ENFORCED</span>
-                            </label>
-                            <input
-                                required
-                                type="text"
-                                placeholder="E.G. PHOENIX"
-                                value={nameToPrint}
-                                onChange={(e) => setNameToPrint(e.target.value.toUpperCase())}
-                                className="w-full px-4 py-4 rounded-xl bg-slate-900 border border-slate-800 text-white focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition-all outline-none font-mono text-lg tracking-widest placeholder:text-slate-700 placeholder:italic"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Payment Info */}
-                    <div className="p-4 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
-                        <div className="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
-                            <div className="w-full lg:w-1/2 space-y-4">
-                                <div>
-                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold mb-3">
-                                        <span>💳</span> SECURE PAYMENT
-                                    </div>
-                                    <h3 className="text-white font-bold text-lg leading-tight">Pay Rs: 700/-</h3>
-                                    <p className="text-slate-400 text-xs mt-1">Scan the QR and attach name in note.</p>
-                                </div>
-
-                                <div className="relative group mx-auto lg:mx-0 w-full max-w-[240px] aspect-square bg-white p-3 rounded-2xl shadow-2xl shadow-black/50 overflow-hidden">
-                                    <Image
-                                        className="w-full h-full object-contain transition-transform group-hover:scale-105 duration-500"
-                                        src="/qr.jpeg"
-                                        alt="Payment QR Code"
-                                        width={240}
-                                        height={240}
-                                        priority
-                                    />
-                                    <div className="absolute inset-0 border-4 border-slate-950/20 rounded-2xl pointer-events-none" />
-                                </div>
+                            {/* Contact */}
+                            <div className="space-y-1.5">
+                                <label className="text-sm font-medium text-[var(--text-secondary)]">WhatsApp Number</label>
+                                <input
+                                    required
+                                    type="tel"
+                                    value={contactNumber}
+                                    onChange={(e) => setContactNumber(e.target.value)}
+                                    className="w-full px-3 py-2 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent outline-none transition-all"
+                                />
                             </div>
 
-                            <div className="w-full lg:w-1/2 flex flex-col gap-5">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Payment Method</label>
-                                    <select
-                                        required
-                                        value={paymentMode}
-                                        onChange={(e) => setPaymentMode(e.target.value)}
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-800 text-white outline-none text-sm appearance-none cursor-pointer focus:border-blue-500/50"
-                                    >
-                                        <option value="" disabled>Select Method</option>
-                                        {PAYMENT_MODES.map((mode) => (
-                                            <option key={mode} value={mode}>{mode}</option>
-                                        ))}
-                                    </select>
+                            {/* Hoodie Size */}
+                            <div className="sm:col-span-2 space-y-1.5">
+                                <label className="text-sm font-medium text-[var(--text-secondary)]">Hoodie Size</label>
+                                
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    {HOODIE_SIZES.map((size) => (
+                                        <button
+                                            key={size}
+                                            type="button"
+                                            onClick={() => setHoodieSize(size)}
+                                            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${hoodieSize === size
+                                                ? 'bg-[var(--accent-primary)] border-[var(--accent-primary)] text-white'
+                                                : 'bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-secondary)] hover:border-[var(--text-secondary)]'
+                                                }`}
+                                        >
+                                            {size}
+                                        </button>
+                                    ))}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Upload Receipt</label>
-                                    <input
-                                        required
-                                        type="file"
-                                        accept="image/*,.pdf"
-                                        onChange={(e) => setFile(e.target.files?.[0] || null)}
-                                        className="hidden"
-                                        id="screenshot-upload"
-                                    />
-                                    <label
-                                        htmlFor="screenshot-upload"
-                                        className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ${file
-                                            ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.05)]'
-                                            : 'border-white/5 bg-slate-900/50 hover:border-blue-500/30 hover:bg-slate-800/80 shadow-inner'
-                                            }`}
-                                    >
-                                        <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-transform ${file ? 'bg-emerald-500/20 scale-110' : 'bg-white/5'}`}>
-                                            <span className="text-xl">{file ? '✅' : '📸'}</span>
+                                {/* Inline Size Chart */}
+                                <div className="bg-white rounded-lg p-2 border border-[var(--border-color)] mt-2">
+                                    <p className="text-xs text-center text-slate-500 mb-1">Standard Size Chart (Inches)</p>
+                                    <div className="relative w-full h-48 sm:h-64 cursor-zoom-in" onClick={() => setShowSizeChart(true)}>
+                                        <Image
+                                            src="/sizechart.png"
+                                            alt="Size Chart"
+                                            fill
+                                            className="object-contain"
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                           <span className="bg-black/50 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">Click to Expand</span>
                                         </div>
-                                        <span className="text-[11px] font-medium text-slate-300 px-4 text-center truncate w-full">
-                                            {file ? file.name : 'Upload Screenshot'}
-                                        </span>
-                                        {!file && <span className="text-[9px] text-slate-500 mt-1 uppercase tracking-tighter">JPG, PNG or PDF (MAX 10MB)</span>}
-                                    </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Name to Print */}
+                            <div className="sm:col-span-2 space-y-1.5">
+                                <label className="text-sm font-medium text-[var(--text-secondary)]">Name on Hoodie (Uppercase)</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={nameToPrint}
+                                    onChange={(e) => setNameToPrint(e.target.value.toUpperCase())}
+                                    className="w-full px-3 py-2 rounded-md bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] focus:ring-2 focus:ring-[var(--accent-primary)] focus:border-transparent outline-none transition-all font-mono"
+                                    placeholder="PHOENIX"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Payment Info */}
+                        <div className="p-4 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)]">
+                            <h3 className="font-semibold text-[var(--text-primary)] mb-4">Payment Details</h3>
+                            <div className="flex flex-col md:flex-row gap-6">
+                                <div className="shrink-0 flex flex-col items-center">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowQR(true)}
+                                        className="w-32 h-32 bg-white p-2 rounded-lg hover:ring-2 ring-[var(--accent-primary)] transition-all cursor-zoom-in relative group"
+                                    >
+                                        <Image
+                                            src="/qr.jpeg"
+                                            alt="QR Code"
+                                            width={128}
+                                            height={128}
+                                            className="w-full h-full object-contain"
+                                        />
+                                        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                            <span className="bg-black/70 text-white text-[10px] px-2 py-1 rounded">Click to Expand</span>
+                                        </div>
+                                    </button>
+                                    <p className="text-center text-xs text-[var(--text-secondary)] mt-2">Scan to pay ₹700</p>
+                                </div>
+
+                                <div className="flex-1 space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium text-[var(--text-secondary)]">Payment Method</label>
+                                        <select
+                                            required
+                                            value={paymentMode}
+                                            onChange={(e) => setPaymentMode(e.target.value)}
+                                            className="w-full px-3 py-2 rounded-md bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--accent-primary)]"
+                                        >
+                                            <option value="" disabled>Select Method</option>
+                                            {PAYMENT_MODES.map((mode) => (
+                                                <option key={mode} value={mode}>{mode}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-sm font-medium text-[var(--text-secondary)]">Upload Screenshot</label>
+                                        <input
+                                            required
+                                            type="file"
+                                            accept="image/*,.pdf"
+                                            onChange={(e) => setFile(e.target.files?.[0] || null)}
+                                            className="block w-full text-sm text-[var(--text-secondary)]
+                                                file:mr-4 file:py-2 file:px-4
+                                                file:rounded-full file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:bg-[var(--accent-primary)] file:text-white
+                                                hover:file:bg-blue-600
+                                                cursor-pointer"
+                                        />
+                                        {file && <p className="text-xs text-green-500 mt-1">Successfully selected: {file.name}</p>}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {error && (
-                        <div className="flex items-center gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 animate-shake">
-                            <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20 text-red-500 text-xs font-bold">!</span>
-                            <p className="text-red-400 text-xs font-medium">{error}</p>
+                        {error && (
+                            <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                                {error}
+                            </div>
+                        )}
+
+                        <div className="flex gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={onCancel}
+                                className="flex-1 px-4 py-2 rounded-md border border-[var(--border-color)] text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting || !file}
+                                className="flex-[2] px-4 py-2 rounded-md bg-[var(--accent-primary)] text-white font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? 'Processing...' : 'Confirm Reservation'}
+                            </button>
                         </div>
-                    )}
-
-                    <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
-                        <button
-                            type="button"
-                            onClick={onCancel}
-                            className="w-full sm:flex-1 px-6 py-4 rounded-xl font-bold text-slate-400 border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:text-white"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            disabled={isSubmitting || !file}
-                            className="w-full sm:flex-[2] px-6 py-4 rounded-xl font-black text-white shadow-2xl transition-all disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group overflow-hidden relative"
-                            style={{ background: 'linear-gradient(135deg, #3b82f6, #6366f1)' }}
-                        >
-                            <span className="relative z-10">{isSubmitting ? 'Processing...' : 'CONFIRM RESERVATION'}</span>
-                            {!isSubmitting && <span className="relative z-10 transition-transform group-hover:translate-x-1">🚀</span>}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
+
+            {/* Size Chart Modal */}
+            {showSizeChart && (
+                <div 
+                    className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+                    onClick={() => setShowSizeChart(false)}
+                >
+                    <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg p-2 overflow-auto" onClick={e => e.stopPropagation()}>
+                        <button 
+                            onClick={() => setShowSizeChart(false)}
+                            className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70 z-10"
+                        >
+                            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <Image
+                            src="/sizechart.png"
+                            alt="Size Chart"
+                            width={800}
+                            height={600}
+                            className="w-full h-auto object-contain"
+                        />
+                    </div>
+                </div>
+            )}
+
+            {/* QR Code Modal - Click anywhere to close */}
+            {showQR && (
+                <div 
+                    className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md cursor-zoom-out"
+                    onClick={() => setShowQR(false)}
+                >
+                    <div className="relative bg-white p-4 rounded-xl shadow-2xl animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <Image
+                            src="/qr.jpeg"
+                            alt="Scan to Pay"
+                            width={400}
+                            height={400}
+                            className="w-auto h-auto max-w-[80vw] max-h-[80vh] object-contain"
+                        />
+                        <p className="text-center text-sm font-medium mt-4 text-slate-900">Scan via any UPI App</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

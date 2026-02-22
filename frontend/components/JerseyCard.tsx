@@ -28,32 +28,20 @@ export default function JerseyCard({
     const isClickable = state === 'available' && !disabled;
 
     const getClassName = () => {
-        if (isMine) return 'jersey-mine';
+        if (isMine) return 'jersey-mine z-10 scale-105 shadow-lg shadow-[var(--accent-primary)]/20';
         switch (state) {
             case 'locked':
                 return 'jersey-locked';
             case 'taken':
                 return 'jersey-taken';
             default:
-                return 'jersey-available';
-        }
-    };
-
-    const getNumberColor = () => {
-        if (isMine) return 'text-blue-300';
-        switch (state) {
-            case 'locked':
-                return 'text-amber-400';
-            case 'taken':
-                return 'text-red-400';
-            default:
-                return 'text-slate-300 group-hover:text-emerald-300';
+                return 'jersey-available hover:text-[var(--accent-primary)] hover:scale-110 hover:-translate-y-1 hover:shadow-lg hover:shadow-[var(--accent-primary)]/20 active:scale-95 z-0 hover:z-10 bg-[var(--card-bg)]';
         }
     };
 
     return (
         <button
-            className={`group relative aspect-square rounded-lg flex flex-col items-center justify-center transition-all duration-200 ${getClassName()}`}
+            className={`group relative aspect-square rounded-lg flex flex-col items-center justify-center overflow-hidden transition-all duration-300 ${getClassName()}`}
             onClick={() => isClickable && onReserve(jerseyNumber)}
             disabled={!isClickable}
             title={
@@ -68,27 +56,22 @@ export default function JerseyCard({
             aria-label={`Jersey ${jerseyNumber} - ${isMine ? 'yours' : state}`}
         >
             {/* Jersey number */}
-            <span className={`text-xs font-bold tabular-nums leading-none transition-colors ${getNumberColor()}`}>
+            <span className="text-sm sm:text-base font-bold tabular-nums leading-none transition-colors">
                 {jerseyNumber.toString().padStart(2, '0')}
             </span>
 
             {/* Owner name for taken jerseys */}
             {state === 'taken' && ownerName && !isMine && (
-                <span className="text-[7px] mt-0.5 leading-none text-red-300/80 truncate w-full text-center px-0.5">
+                <span className="text-[9px] mt-1 leading-tight opacity-70 truncate w-full text-center px-1 font-medium z-10">
                     {ownerName}
                 </span>
             )}
 
             {/* State icon */}
             {state !== 'available' && !ownerName && (
-                <span className="text-[8px] mt-0.5 leading-none">
+                <span className="text-[10px] mt-1 leading-none opacity-70">
                     {isMine ? '★' : STATE_ICONS[state]}
                 </span>
-            )}
-
-            {/* Mine indicator ring */}
-            {isMine && (
-                <div className="absolute inset-0 rounded-lg border-2 border-blue-400 opacity-60 animate-ping" />
             )}
         </button>
     );

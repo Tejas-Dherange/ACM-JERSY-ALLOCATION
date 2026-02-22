@@ -3,7 +3,7 @@ import { Providers } from '@/components/Providers';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-    title: 'Jersey Allocation – Real-Time Booking',
+    title: 'FairPick – Real-Time Booking',
     description:
         'Book your unique jersey number in real-time. Fair, atomic, first-come-first-served.',
 };

@@ -9,27 +9,31 @@ function SignInContent() {
   const error = searchParams.get("error");
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="bg-slate-800 p-8 rounded-lg shadow-xl max-w-md w-full">
-        <h1 className="text-3xl font-bold text-white mb-2 text-center">
-          Jersey Allocation
-        </h1>
-        <p className="text-slate-400 text-center mb-8">
-          Sign in to reserve your jersey
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+      <div className="w-full max-w-md p-8 bg-[var(--card-bg)] rounded-xl border border-[var(--card-border)] shadow-sm">
+        <div className="flex flex-col items-center justify-center mb-8">
+          <div className="w-12 h-12 mb-4 rounded-lg bg-[var(--accent-primary)] flex items-center justify-center animate-bounce-in">
+            <span className="text-xl font-bold text-white">FP</span>
+          </div>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
+            FairPick
+          </h1>
+          <p className="text-[var(--text-secondary)] text-center">
+            Sign in to access the booking system
+          </p>
+        </div>
 
         {error === "AccessDenied" && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-500 rounded-lg">
-            <p className="text-red-400 text-sm text-center">
-              <strong>Access Denied:</strong> Your email is not authorized to access this application.
-              Please contact the administrator.
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-500 text-sm text-center font-medium">
+              Access Denied: Unauthorized email.
             </p>
           </div>
         )}
 
         <button
           onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          className="w-full bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-3 transition-colors"
+          className="w-full h-12 flex items-center justify-center gap-3 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg transition-colors text-[var(--text-primary)] font-medium"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
@@ -49,12 +53,13 @@ function SignInContent() {
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
             />
           </svg>
-          Sign in with Google
+          <span>Continue with Google</span>
         </button>
 
-        <p className="text-slate-500 text-sm text-center mt-6">
-          Choose your favorite jersey number from 1-99
-        </p>
+        <div className="mt-8 flex items-center justify-center gap-2 text-[var(--text-secondary)] text-sm">
+          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+          <span>System Online</span>
+        </div>
       </div>
     </div>
   );

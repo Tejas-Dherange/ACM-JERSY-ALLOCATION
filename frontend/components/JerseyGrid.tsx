@@ -19,15 +19,16 @@ export default function JerseyGrid({
     const jerseyNumbers = Array.from({ length: 100 }, (_, i) => i);
 
     return (
-        <div className="glass-card p-6">
-            <div
-                className="grid gap-2"
-                style={{ gridTemplateColumns: 'repeat(10, minmax(0, 1fr))' }}
-            >
+        <div className="bg-[var(--card-bg)] border border-[var(--card-border)] rounded-lg p-6 shadow-sm">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(3.5rem,1fr))] gap-3 place-items-stretch">
                 {jerseyNumbers.map((num) => {
                     const info = jerseyStates[num.toString()];
                     const state = info?.state ?? 'available';
+                    const ownerName = info?.ownerName;
+                    
                     const isMine = num === myJersey;
+                    
+                    const isDisabled = (state !== 'available' && !isMine) || (myJersey !== null && !isMine);
 
                     return (
                         <JerseyCard
@@ -35,8 +36,8 @@ export default function JerseyGrid({
                             jerseyNumber={num}
                             state={state}
                             isMine={isMine}
-                            disabled={myJersey !== null}
-                            ownerName={info?.ownerName}
+                            disabled={isDisabled}
+                            ownerName={ownerName}
                             onReserve={onReserve}
                         />
                     );

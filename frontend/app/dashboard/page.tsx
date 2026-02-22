@@ -31,14 +31,17 @@ export default function DashboardPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-slate-400 animate-pulse">Loading…</div>
+            <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-8 h-8 border-2 border-[var(--text-secondary)] border-t-[var(--accent-primary)] rounded-full animate-spin"></div>
+                    <div className="text-[var(--text-secondary)] text-sm font-medium">Loading system...</div>
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-[var(--bg-primary)] animate-fade-in">
             <Header
                 user={authUser}
                 myJersey={myJersey}
@@ -48,87 +51,96 @@ export default function DashboardPage() {
             <main className="max-w-6xl mx-auto px-4 py-8">
                 {/* Error banner */}
                 {error && (
-                    <div className="mb-6 p-4 rounded-xl border border-red-500/40 bg-red-900/20 text-red-300 text-sm font-medium animate-slide-up flex items-center gap-2">
-                        <span>⚠️</span>
+                    <div className="mb-6 p-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-3 animate-slide-in-right">
+                        <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
                         <span>{error}</span>
                     </div>
                 )}
 
                 {/* Success banner */}
                 {myJersey !== null && (
-                    <div className="mb-6 p-4 rounded-xl border border-blue-500/40 animate-slide-up"
-                        style={{ background: 'linear-gradient(135deg, rgba(79,114,232,0.15), rgba(79,114,232,0.05))' }}>
-                        <div className="flex items-center gap-3">
-                            <div className="text-3xl">🎉</div>
+                    <div className="mb-8 p-6 rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] shadow-sm animate-slide-up">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-[var(--accent-primary)]/10 flex items-center justify-center text-[var(--accent-primary)]">
+                                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
                             <div>
-                                <p className="text-white font-bold text-lg">
-                                    Your jersey number is{' '}
-                                    <span className="text-gradient text-2xl">#{myJersey}</span>
+                                <h3 className="text-[var(--text-primary)] font-semibold text-lg">
+                                    Jersey Allocated
+                                </h3>
+                                <p className="text-[var(--text-secondary)]">
+                                    Your designated number is <span className="font-bold text-[var(--accent-primary)]">#{myJersey}</span>
                                 </p>
-                                <p className="text-slate-400 text-sm">Successfully reserved and confirmed!</p>
                             </div>
                         </div>
                     </div>
                 )}
 
-                {/* Info bar */}
-                <div className="flex items-center justify-between mb-6">
+
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                     <div>
-                        <h2 className="text-2xl font-bold text-white">Select Your Jersey</h2>
-                        <p className="text-slate-400 text-sm mt-1">
-                            100 jerseys available · First-come, first-served · Each member gets one
-                        </p>
+                        <h2 className="text-2xl font-bold text-[var(--text-primary)]">FairPick Allocation</h2>
+                        <p className="text-[var(--text-secondary)] text-sm mt-1">Select your preferred jersey number below.</p>
                     </div>
+
                     {/* Legend */}
-                    <div className="hidden md:flex items-center gap-4 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 text-xs bg-[var(--card-bg)] border border-[var(--border-color)] p-2 rounded-lg">
                         {[
-                            { cls: 'bg-slate-700 border border-emerald-400/50', label: 'Available' },
-                            { cls: 'bg-amber-900/50 border border-amber-500/60', label: 'Locked' },
-                            { cls: 'bg-red-900/50 border border-red-500/60', label: 'Taken' },
-                            { cls: 'border-2 border-blue-500', label: 'Mine', style: { background: 'rgba(79,114,232,0.3)' } },
-                        ].map(({ cls, label, style }) => (
-                            <div key={label} className="flex items-center gap-1.5">
-                                <div className={`w-3 h-3 rounded ${cls}`} style={style} />
-                                <span className="text-slate-400">{label}</span>
+                            { cls: 'jersey-available h-3 w-3', label: 'Available' },
+                            { cls: 'jersey-locked h-3 w-3', label: 'Locked' },
+                            { cls: 'jersey-taken h-3 w-3', label: 'Taken' },
+                            { cls: 'bg-[var(--accent-primary)] border border-[var(--accent-primary)] h-3 w-3 rounded-full', label: 'Yours' },
+                        ].map(({ cls, label }) => (
+                            <div key={label} className="flex items-center gap-2">
+                                <div className={`rounded-sm ${cls}`} />
+                                <span className="text-[var(--text-secondary)] font-medium">{label}</span>
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <JerseyGrid
-                    jerseyStates={jerseyStates}
-                    myJersey={myJersey}
-                    currentUserId={authUser?.id ?? null}
-                    onReserve={(num) => { if (myJersey === null) setPendingJersey(num); }}
-                />
+                <div className="animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                    <JerseyGrid
+                        jerseyStates={jerseyStates}
+                        myJersey={myJersey}
+                        currentUserId={authUser?.id ?? null}
+                        onReserve={(num) => { if (myJersey === null) setPendingJersey(num); }}
+                    />
+                </div>
 
                 {/* Stats */}
-                <div className="mt-8 grid grid-cols-3 gap-4">
+                <div className="mt-8 grid grid-cols-3 gap-4 animate-slide-up" style={{ animationDelay: '0.3s' }}>
                     {[
-                        { label: 'Available', color: 'text-emerald-400', state: 'available' },
-                        { label: 'Locked', color: 'text-amber-400', state: 'locked' },
-                        { label: 'Taken', color: 'text-red-400', state: 'taken' },
+                        { label: 'Available', color: 'text-green-500', state: 'available' },
+                        { label: 'Locked', color: 'text-yellow-500', state: 'locked' },
+                        { label: 'Taken', color: 'text-slate-500', state: 'taken' },
                     ].map(({ label, color, state }) => (
-                        <div key={label} className="glass-card p-4 text-center">
+                        <div key={label} className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-lg p-4 text-center shadow-sm hover:scale-[1.02] transition-transform duration-200">
                             <div className={`text-2xl font-bold ${color}`}>
                                 {Object.values(jerseyStates).filter((v) => v.state === state).length}
                             </div>
-                            <div className="text-slate-400 text-sm mt-1">{label}</div>
+                            <div className="text-[var(--text-secondary)] text-sm mt-1">{label}</div>
                         </div>
                     ))}
                 </div>
             </main>
 
             {/* Booking Form Modal */}
-            <BookingFormModal
-                jerseyNumber={pendingJersey}
-                user={authUser}
-                onSuccess={(formData) => {
-                    reserveJersey(formData);
-                    setPendingJersey(null);
-                }}
-                onCancel={() => setPendingJersey(null)}
-            />
+            {pendingJersey !== null && authUser && (
+                <BookingFormModal
+                    jerseyNumber={pendingJersey}
+                    user={authUser}
+                    onSuccess={(formData) => {
+                        reserveJersey(formData);
+                        setPendingJersey(null);
+                    }}
+                    onCancel={() => setPendingJersey(null)}
+                />
+            )}
         </div>
     );
 }

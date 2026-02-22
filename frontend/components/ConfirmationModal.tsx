@@ -24,32 +24,24 @@ export default function ConfirmationModal({
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(6px)' }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
             onClick={onCancel}
         >
             <div
-                className="glass-card p-8 w-full max-w-sm animate-slide-up"
+                className="bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl shadow-lg p-6 w-full max-w-sm"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Jersey preview */}
                 <div className="text-center mb-6">
-                    <div
-                        className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 text-4xl font-black text-white"
-                        style={{
-                            background: 'linear-gradient(135deg, #4f72e8, #6366f1)',
-                            boxShadow: '0 8px 30px rgba(79, 114, 232, 0.45)',
-                        }}
-                    >
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4 bg-[var(--accent-primary)] text-white text-2xl font-bold">
                         {jerseyNumber.toString().padStart(2, '0')}
                     </div>
 
-                    <h2 className="text-xl font-bold text-white mb-2">Confirm Your Jersey</h2>
-                    <p className="text-slate-400 text-sm leading-relaxed">
-                        You're about to claim jersey{' '}
-                        <span className="text-white font-semibold">#{jerseyNumber.toString().padStart(2, '0')}</span>.
+                    <h2 className="text-lg font-bold text-[var(--text-primary)] mb-2">Confirm Selection</h2>
+                    <p className="text-[var(--text-secondary)] text-sm">
+                        Reserving jersey <span className="font-semibold text-[var(--accent-primary)]">#{jerseyNumber}</span>.
                         <br />
-                        <span className="text-amber-400 font-medium">This cannot be changed later.</span>
+                        This action cannot be undone.
                     </p>
                 </div>
 
@@ -57,20 +49,15 @@ export default function ConfirmationModal({
                 <div className="flex gap-3">
                     <button
                         onClick={onCancel}
-                        className="flex-1 py-3 rounded-xl text-sm font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 transition-all duration-200 hover:text-white"
+                        className="flex-1 py-2.5 rounded-lg text-sm font-medium text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-[var(--bg-primary)] transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={onConfirm}
-                        className="flex-1 py-3 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:scale-[1.03] active:scale-[0.97]"
-                        style={{
-                            background: 'linear-gradient(135deg, #4f72e8, #6366f1)',
-                            boxShadow: '0 4px 20px rgba(79, 114, 232, 0.4)',
-                        }}
+                        className="flex-1 py-2.5 rounded-lg text-sm font-medium text-white bg-[var(--accent-primary)] hover:bg-blue-600 transition-colors shadow-sm"
                     >
-                        Claim #
-                        {jerseyNumber.toString().padStart(2, '0')} 🎽
+                        Confirm
                     </button>
                 </div>
             </div>
