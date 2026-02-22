@@ -7,11 +7,19 @@ import Image from 'next/image';
 interface BookingFormModalProps {
     jerseyNumber: number | null;
     user: AuthUser | null;
-    onSuccess: (jerseyNumber: number) => void;
+    onSuccess: (formData: {
+        jerseyNumber: number;
+        fullName: string;
+        contactNumber: string;
+        hoodieSize: string;
+        nameToPrint: string;
+        paymentMode: string;
+        paymentScreenshot: string;
+    }) => void;
     onCancel: () => void;
 }
 
-const HOODIE_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+const HOODIE_SIZES = ['S', 'M', 'L', 'XL', 'XXL', '3XL'];
 const PAYMENT_MODES = ['Google Pay', 'Phone Pe', 'Bhim UPI', 'Paytm', 'Other'];
 
 export default function BookingFormModal({
@@ -40,37 +48,40 @@ export default function BookingFormModal({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user || !file) return;
+        if (!user || !file || jerseyNumber === null) return;
 
         setIsSubmitting(true);
         setError(null);
 
-        const formData = new FormData();
-        formData.append('userId', user.id);
-        formData.append('jerseyNumber', jerseyNumber.toString());
-        formData.append('fullName', fullName);
-        formData.append('contactNumber', contactNumber);
-        formData.append('hoodieSize', hoodieSize);
-        formData.append('nameToPrint', nameToPrint.toUpperCase());
-        formData.append('paymentMode', paymentMode);
-        formData.append('paymentScreenshot', file);
-
         try {
-            const res = await fetch('/api/backend/booking/submit', {
+            // Upload file to Cloudinary first
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/upload/payment-screenshot`, {
                 method: 'POST',
                 body: formData,
             });
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.error || 'Failed to submit booking');
+            if (!uploadRes.ok) {
+                const errorData = await uploadRes.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Failed to upload payment screenshot');
             }
 
-            onSuccess(jerseyNumber);
+            const { url: cloudinaryUrl } = await uploadRes.json();
+
+            // Pass all form data to parent component via onSuccess callback
+            onSuccess({
+                jerseyNumber,
+                fullName: fullName.trim(),
+                contactNumber: contactNumber.trim(),
+                hoodieSize: hoodieSize.trim(),
+                nameToPrint: nameToPrint.trim().toUpperCase(),
+                paymentMode: paymentMode.trim(),
+                paymentScreenshot: cloudinaryUrl,
+            });
         } catch (err: any) {
-            setError(err.message);
-        } finally {
+            setError(err.message || 'Failed to submit booking');
             setIsSubmitting(false);
         }
     };
@@ -127,6 +138,22 @@ export default function BookingFormModal({
                         {/* Hoodie Size */}
                         <div className="sm:col-span-2 space-y-3">
                             <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider ml-1">Select Hoodie Size</label>
+                            
+                            {/* Size Chart Image */}
+                            <div className="mb-4 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                                <p className="text-slate-400 text-xs mb-2 text-center">
+                                    📐 Size Chart <span className="text-white font-semibold">(measurements in inches)</span>
+                                </p>
+                                <Image
+                                    src="/sizechart.png"
+                                    alt="Hoodie Size Chart"
+                                    width={800}
+                                    height={600}
+                                    className="w-full h-auto rounded-lg"
+                                    priority
+                                />
+                            </div>
+
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                                 {HOODIE_SIZES.map((size) => (
                                     <button

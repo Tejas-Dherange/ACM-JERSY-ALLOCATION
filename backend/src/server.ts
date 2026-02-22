@@ -4,6 +4,8 @@ import cors from 'cors';
 import { Server as SocketIOServer } from 'socket.io';
 import { initSocketIO } from './sockets/index';
 import healthRouter from './routes/health.route';
+import adminRouter from './routes/admin.route';
+import uploadRouter from './routes/upload.route';
 
 export function createApp(): {
     app: express.Application;
@@ -23,6 +25,9 @@ export function createApp(): {
 
     // Routes
     app.use('/api', healthRouter);
+    app.use('/api/admin', adminRouter);
+    app.use('/api/upload', uploadRouter);
+    // Note: booking.route.ts is incomplete - reservations handled via WebSocket
 
     // 404 handler
     app.use((_req, res) => {

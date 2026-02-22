@@ -60,20 +60,17 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Jersey Booking Model — now includes full order form data
+// Jersey Booking Model with complete form data
 model JerseyBooking {
   id                String   @id @default(uuid())
   userId            String
   jerseyNumber      Int      @unique
-  createdAt         DateTime @default(now())
-
-  // Form fields
   fullName          String
   contactNumber     String
-  hoodieSize        String   // XS / S / M / L / XL / XXL
-  nameToPrint       String
-  paymentScreenshot String   // Cloudinary secure URL
-  paymentMode       String   // GooglePay / PhonePe / BhimUPI / Paytm / Other
-
+  hoodieSize        String   // XS, S, M, L, XL, XXL
+  nameToPrint       String   // Name to be printed on hoodie (UPPERCASE)
+  paymentMode       String   // Google Pay, Phone Pe, Bhim UPI, Paytm, Other
+  paymentScreenshot String   // Cloudinary URL
+  createdAt         DateTime @default(now())
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

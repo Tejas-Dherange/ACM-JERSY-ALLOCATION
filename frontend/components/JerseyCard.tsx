@@ -7,6 +7,7 @@ interface JerseyCardProps {
     state: JerseyState;
     isMine: boolean;
     disabled: boolean;
+    ownerName?: string;
     onReserve: (jerseyNumber: number) => void;
 }
 
@@ -21,6 +22,7 @@ export default function JerseyCard({
     state,
     isMine,
     disabled,
+    ownerName,
     onReserve,
 }: JerseyCardProps) {
     const isClickable = state === 'available' && !disabled;
@@ -60,7 +62,7 @@ export default function JerseyCard({
                     : state === 'locked'
                         ? 'Temporarily locked'
                         : state === 'taken'
-                            ? 'Already taken'
+                            ? ownerName ? `Taken by ${ownerName}` : 'Already taken'
                             : `Click to reserve #${jerseyNumber}`
             }
             aria-label={`Jersey ${jerseyNumber} - ${isMine ? 'yours' : state}`}
@@ -70,8 +72,15 @@ export default function JerseyCard({
                 {jerseyNumber.toString().padStart(2, '0')}
             </span>
 
+            {/* Owner name for taken jerseys */}
+            {state === 'taken' && ownerName && !isMine && (
+                <span className="text-[7px] mt-0.5 leading-none text-red-300/80 truncate w-full text-center px-0.5">
+                    {ownerName}
+                </span>
+            )}
+
             {/* State icon */}
-            {state !== 'available' && (
+            {state !== 'available' && !ownerName && (
                 <span className="text-[8px] mt-0.5 leading-none">
                     {isMine ? '★' : STATE_ICONS[state]}
                 </span>

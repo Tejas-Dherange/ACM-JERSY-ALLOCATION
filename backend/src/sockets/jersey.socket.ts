@@ -17,6 +17,7 @@ export interface JerseyStateMap {
     [number: string]: {
         state: JerseyState;
         userId?: string;
+        ownerName?: string;
     };
 }
 
@@ -36,7 +37,8 @@ async function getFullJerseyState(): Promise<JerseyStateMap> {
     for (const num of takenJerseys) {
         // Get user from bookings - look up via a lookup hash
         const userId = await redis.hget('jersey:owners', num);
-        stateMap[num] = { state: 'taken', userId: userId || undefined };
+        const ownerName = await redis.hget('jersey:names', num);
+        stateMap[num] = { state: 'taken', userId: userId || undefined, ownerName: ownerName || undefined };
     }
 
     // Get locked jerseys
@@ -67,10 +69,19 @@ export function registerJerseySocket(io: SocketIOServer, socket: Socket): void {
         });
 
     // ── jersey:reserve ──────────────────────────────────────────────────────────
-    socket.on('jersey:reserve', async (data: { jerseyNumber: number }) => {
-        const { jerseyNumber } = data;
+    socket.on('jersey:reserve', async (data: { 
+        jerseyNumber: number;
+        fullName: string;
+        contactNumber: string;
+        hoodieSize: string;
+        nameToPrint: string;
+        paymentMode: string;
+        paymentScreenshot: string;
+    }) => {
+        const { jerseyNumber, fullName, contactNumber, hoodieSize, nameToPrint, paymentMode, paymentScreenshot } = data;
 
         console.log(`[Socket] User ${userId} attempting to reserve jersey ${jerseyNumber}`);
+        console.log(`[Socket] Booking details: ${fullName}, ${contactNumber}, ${hoodieSize}, ${nameToPrint}, ${paymentMode}`);
 
         // Rate limiting: max 3 reservation attempts per 10 seconds per user
         const rateCheck = await checkRateLimit(userId, 'jersey:reserve', {
@@ -83,6 +94,16 @@ export function registerJerseySocket(io: SocketIOServer, socket: Socket): void {
             socket.emit('jersey:failed', {
                 jerseyNumber,
                 reason: 'Too many attempts. Please wait 10 seconds before trying again.',
+            });
+            return;
+        }
+
+        // Validate form fields
+        if (!fullName?.trim() || !contactNumber?.trim() || !hoodieSize?.trim() || !nameToPrint?.trim() || !paymentMode?.trim() || !paymentScreenshot) {
+            console.log(`[Socket] Missing required form fields`);
+            socket.emit('jersey:failed', {
+                jerseyNumber,
+                reason: 'All form fields are required.',
             });
             return;
         }
@@ -137,8 +158,19 @@ export function registerJerseySocket(io: SocketIOServer, socket: Socket): void {
                 userId,
             });
 
-            // Add to queue for DB persistence
-            await addBookingJob(userId, email, jerseyNumber, socket.id);
+            // Add to queue for DB persistence with all booking form data
+            await addBookingJob(
+                userId, 
+                email, 
+                jerseyNumber, 
+                fullName,
+                contactNumber,
+                hoodieSize,
+                nameToPrint,
+                paymentMode,
+                paymentScreenshot,
+                socket.id
+            );
 
         } catch (err: any) {
             console.error('[Socket] jersey:reserve error:', err);

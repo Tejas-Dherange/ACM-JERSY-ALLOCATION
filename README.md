@@ -2,7 +2,19 @@
 
 A production-ready, real-time jersey number booking application — like a movie-ticket system for team jerseys. First-come, first-served. Fully atomic. No race conditions.
 
-## 🚀 Quick Start
+---
+
+## 📚 Documentation
+
+- **[Quick Start Guide](#-quick-start)** - Run locally with Docker
+- **[DEPLOYMENT_STEPS.md](DEPLOYMENT_STEPS.md)** - Complete production deployment guide
+- **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Step-by-step deployment checklist
+- **[DEPLOYMENT_COMMANDS.md](DEPLOYMENT_COMMANDS.md)** - Quick command reference
+- **[PRODUCTION_READINESS.md](PRODUCTION_READINESS.md)** - Production readiness review
+
+---
+
+## 🚀 Quick Start (Local Development)
 
 ### Prerequisites
 - [Docker & Docker Compose](https://www.docker.com/get-started)
@@ -158,3 +170,60 @@ cd frontend
 npm install
 npm run dev
 ```
+
+---
+
+## 🚢 Production Deployment
+
+### Deploy to Vercel + Digital Ocean
+
+This project is designed for production deployment with:
+- **Frontend**: Vercel (Next.js with auto-scaling)
+- **Backend**: Digital Ocean VPS (Docker + Docker Compose)
+- **Database**: Neon PostgreSQL (already configured)
+- **Redis**: Self-hosted on VPS (Docker container)
+- **Storage**: Cloudinary (payment screenshots)
+
+### Complete Deployment Guides
+
+1. **[DEPLOYMENT_STEPS.md](DEPLOYMENT_STEPS.md)** - Detailed step-by-step guide with explanations
+2. **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Interactive checklist to track progress
+3. **[DEPLOYMENT_COMMANDS.md](DEPLOYMENT_COMMANDS.md)** - Quick reference of all commands
+
+### Quick Deployment Summary
+
+**1. Prepare**
+```bash
+# Generate secure API key
+openssl rand -base64 32
+
+# Create production env
+cd backend
+cp .env.production.example .env.production
+# Update with your values
+```
+
+**2. Deploy Backend (Digital Ocean)**
+```bash
+# On VPS
+curl -fsSL https://get.docker.com | sh
+apt install docker-compose -y
+git clone YOUR_REPO /var/www/jersey-app
+cd /var/www/jersey-app
+docker-compose up -d --build
+```
+
+**3. Deploy Frontend (Vercel)**
+- Import repo at https://vercel.com/new
+- Set root directory: `frontend`
+- Add environment variables
+- Deploy
+
+**4. Configure**
+- Update Google OAuth with production URLs
+- Update backend `FRONTEND_URL` with Vercel URL
+- Test complete booking flow
+
+See [DEPLOYMENT_STEPS.md](DEPLOYMENT_STEPS.md) for complete instructions.
+
+---

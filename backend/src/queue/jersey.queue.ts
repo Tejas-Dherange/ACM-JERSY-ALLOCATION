@@ -4,6 +4,12 @@ export interface BookingJobData {
     userId: string;
     email: string;
     jerseyNumber: number;
+    fullName: string;
+    contactNumber: string;
+    hoodieSize: string;
+    nameToPrint: string;
+    paymentMode: string;
+    paymentScreenshot: string;
     socketId: string;
 }
 
@@ -48,11 +54,28 @@ export async function addBookingJob(
     userId: string,
     email: string,
     jerseyNumber: number,
+    fullName: string,
+    contactNumber: string,
+    hoodieSize: string,
+    nameToPrint: string,
+    paymentMode: string,
+    paymentScreenshot: string,
     socketId: string
 ): Promise<void> {
     await jerseyQueue.add(
         'book-jersey',
-        { userId, email, jerseyNumber, socketId },
+        { 
+            userId, 
+            email, 
+            jerseyNumber, 
+            fullName,
+            contactNumber,
+            hoodieSize,
+            nameToPrint,
+            paymentMode,
+            paymentScreenshot,
+            socketId 
+        },
         {
             jobId: `booking:${userId}:${jerseyNumber}`, // idempotency key
         }

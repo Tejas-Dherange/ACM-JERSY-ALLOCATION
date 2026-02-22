@@ -10,6 +10,7 @@ export interface JerseyStateMap {
     [number: string]: {
         state: JerseyState;
         userId?: string;
+        ownerName?: string;
     };
 }
 
@@ -18,7 +19,15 @@ interface UseSocketReturn {
     myJersey: number | null;
     isConnected: boolean;
     error: string | null;
-    reserveJersey: (jerseyNumber: number) => void;
+    reserveJersey: (formData: {
+        jerseyNumber: number;
+        fullName: string;
+        contactNumber: string;
+        hoodieSize: string;
+        nameToPrint: string;
+        paymentMode: string;
+        paymentScreenshot: string;
+    }) => void;
 }
 
 export function useSocket(
@@ -77,12 +86,13 @@ export function useSocket(
 
         socket.on(
             'state:update',
-            (update: { jerseyNumber: number; state: JerseyState; userId?: string }) => {
+            (update: { jerseyNumber: number; state: JerseyState; userId?: string; ownerName?: string }) => {
                 setJerseyStates((prev) => ({
                     ...prev,
                     [update.jerseyNumber.toString()]: {
                         state: update.state,
                         userId: update.userId,
+                        ownerName: update.ownerName,
                     },
                 }));
             }
@@ -111,10 +121,18 @@ export function useSocket(
         };
     }, [token, userId]);
 
-    const reserveJersey = useCallback((jerseyNumber: number) => {
+    const reserveJersey = useCallback((formData: {
+        jerseyNumber: number;
+        fullName: string;
+        contactNumber: string;
+        hoodieSize: string;
+        nameToPrint: string;
+        paymentMode: string;
+        paymentScreenshot: string;
+    }) => {
         if (socketRef.current?.connected) {
-            console.log(`[useSocket] Attempting to reserve jersey ${jerseyNumber}`);
-            socketRef.current.emit('jersey:reserve', { jerseyNumber });
+            console.log(`[useSocket] Attempting to reserve jersey ${formData.jerseyNumber} with form data`);
+            socketRef.current.emit('jersey:reserve', formData);
         } else {
             console.error('[useSocket] Cannot reserve: socket not connected');
         }

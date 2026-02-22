@@ -36,6 +36,7 @@ export default function JerseyGrid({
                             state={state}
                             isMine={isMine}
                             disabled={myJersey !== null}
+                            ownerName={info?.ownerName}
                             onReserve={onReserve}
                         />
                     );

@@ -11,12 +11,28 @@ export function setIOInstance(io: SocketIOServer): void {
 }
 
 async function processBookingJob(job: Job<BookingJobData>): Promise<void> {
-    const { userId, email, jerseyNumber, socketId } = job.data;
+    const { 
+        userId, 
+        email, 
+        jerseyNumber, 
+        fullName,
+        contactNumber,
+        hoodieSize,
+        nameToPrint,
+        paymentMode,
+        paymentScreenshot,
+        socketId 
+    } = job.data;
     console.log(`[Worker] ========================================`);
     console.log(`[Worker] Processing booking job`);
     console.log(`[Worker] User ID: ${userId}`);
     console.log(`[Worker] Email: ${email}`);
     console.log(`[Worker] Jersey Number: ${jerseyNumber}`);
+    console.log(`[Worker] Full Name: ${fullName}`);
+    console.log(`[Worker] Contact: ${contactNumber}`);
+    console.log(`[Worker] Hoodie Size: ${hoodieSize}`);
+    console.log(`[Worker] Name to Print: ${nameToPrint}`);
+    console.log(`[Worker] Payment Mode: ${paymentMode}`);
     console.log(`[Worker] Socket ID: ${socketId}`);
     console.log(`[Worker] ========================================`);
 
@@ -35,7 +51,16 @@ async function processBookingJob(job: Job<BookingJobData>): Promise<void> {
         const booking = await prisma.jerseyBooking.upsert({
             where: { jerseyNumber },
             update: {},
-            create: { userId, jerseyNumber },
+            create: { 
+                userId, 
+                jerseyNumber,
+                fullName,
+                contactNumber,
+                hoodieSize,
+                nameToPrint,
+                paymentMode,
+                paymentScreenshot
+            },
         });
         console.log(`[Worker] Booking created:`, booking);
 
@@ -43,6 +68,7 @@ async function processBookingJob(job: Job<BookingJobData>): Promise<void> {
         const pipeline = redis.pipeline();
         pipeline.sadd('jersey:taken', jerseyNumber.toString());
         pipeline.hset('jersey:owners', jerseyNumber.toString(), userId);
+        pipeline.hset('jersey:names', jerseyNumber.toString(), nameToPrint);
         pipeline.hdel('jersey:locked', jerseyNumber.toString());
         pipeline.del(`jersey:user:${userId}`);
         await pipeline.exec();
@@ -55,6 +81,7 @@ async function processBookingJob(job: Job<BookingJobData>): Promise<void> {
                 jerseyNumber,
                 state: 'taken',
                 userId,
+                ownerName: nameToPrint,
             });
 
             // Notify the specific user of success

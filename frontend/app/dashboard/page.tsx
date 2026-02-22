@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import JerseyGrid from '@/components/JerseyGrid';
-import ConfirmationModal from '@/components/ConfirmationModal';
+import BookingFormModal from '@/components/BookingFormModal';
 import { useSocket } from '@/hooks/useSocket';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -119,10 +119,14 @@ export default function DashboardPage() {
                 </div>
             </main>
 
-            {/* Confirmation modal */}
-            <ConfirmationModal
+            {/* Booking Form Modal */}
+            <BookingFormModal
                 jerseyNumber={pendingJersey}
-                onConfirm={() => { if (pendingJersey !== null) reserveJersey(pendingJersey); setPendingJersey(null); }}
+                user={authUser}
+                onSuccess={(formData) => {
+                    reserveJersey(formData);
+                    setPendingJersey(null);
+                }}
                 onCancel={() => setPendingJersey(null)}
             />
         </div>
