@@ -18,6 +18,9 @@ RUN npx prisma generate --schema=src/prisma/schema.prisma
 # Build TypeScript
 RUN npm run build
 
+# Copy non-TS files (like .lua) to dist folder
+RUN mkdir -p dist/redis && cp src/redis/*.lua dist/redis/
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Production stage
 FROM node:20-alpine AS runner
